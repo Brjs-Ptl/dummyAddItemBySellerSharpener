@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dummy Flipy</title>
+</head>
+<body>
+
+    <div>
+        <label for="sellingprice">Selling Price</label>
+        <input type="number" id="sellingprice">
+
+        <label for="productname">Product Name</label>
+        <input type="text" id="productname">
+
+        <button onclick="addProduct()">Add Product</button>
+
+    </div>
+
+    <div id="result"></div>
+    <div id="totalSellingPrice"></div>
+
+    <script>
+        var products = JSON.parse(localStorage.getItem("products")) || [];
+
+        function addProduct() {
+
+            var display = document.getElementById("result")
+
+            var sellingPrice = document.getElementById("sellingprice").value;
+            var productName = document.getElementById("productname").value;
+
+
+            if (sellingPrice && productName) {
+                var product = {
+                    sellingprice: parseFloat(sellingPrice),
+                    productname: productName
+                };
+
+                products.push(product);
+
+                saveProductToLocalStorage();
+
+                document.getElementById("sellingprice").value = "";
+                document.getElementById("productname").value = "";
+
+                showProducts();
+                displayTotalSellingPrice();
+
+            };
+
+        };
+
+        function deleteProduct(index) {
+            products.splice(index,1);
+            saveProductToLocalStorage();
+
+            showProducts();
+            displayTotalSellingPrice();
+
+        }
+
+
+        function showProducts() {
+            var display = document.getElementById("result");
+            display.innerHTML = "<h2>Products</h2>" 
+
+            for (var i = 0; i < products.length; i++) {
+                var product = products[i]
+
+                var displayProduct = (i + 1) + ". " + product.sellingprice + " - " + product.productname;
+
+                display.innerHTML += "<p>" + displayProduct + " " +
+                    "<button onclick='deleteProduct(" + i + ")'>Delete</button></p>";
+            }
+        }
+
+        function displayTotalSellingPrice() {
+            var totalSellingPrice = products.reduce(function(sum, product) {
+                return sum + product.sellingprice;
+            }, 0);
+
+            document.getElementById("totalSellingPrice").textContent = "Total Selling Price" + totalSellingPrice.toFixed(2);
+        };
+
+
+        function getProductsFromLocalStorage() {
+            try {
+                return JSON.parse(localStorage.getItem("products")) || [];
+
+            } catch (error) {
+                console.error(error);
+                return []
+            }
+        }
+
+        function saveProductToLocalStorage() {
+            try {
+                localStorage.setItem("products", JSON.stringify(products));
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        showProducts();
+        displayTotalSellingPrice();
+
+
+
+
+    </script>
+
+    
+    
+</body>
+</html>
